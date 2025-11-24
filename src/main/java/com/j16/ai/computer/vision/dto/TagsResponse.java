@@ -1,12 +1,9 @@
 package com.j16.ai.computer.vision.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
 import java.util.List;
 
-@Data
-@AllArgsConstructor
-public class TagsResponse {
-    private List<TagResponse> tags;
+public record TagsResponse(
+        List<TagResponse> tags
+) {
+
 }

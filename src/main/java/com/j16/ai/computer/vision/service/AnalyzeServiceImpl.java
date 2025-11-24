@@ -14,21 +14,21 @@ import java.util.Collections;
 @Service
 public class AnalyzeServiceImpl implements AnalyzeService {
 
-    private final ImageAnalysisClient client;
+    private final ImageAnalysisClient imageAnalysisClient;
 
     @Autowired
     public AnalyzeServiceImpl(
             @Value("${vision.endpoint.uri}") String endpointUri,
             @Value("${vision.endpoint.key}") String endpointKey
     ) {
-        this.client = new ImageAnalysisClientBuilder()
+        this.imageAnalysisClient = new ImageAnalysisClientBuilder()
                 .endpoint(endpointUri)
                 .credential(new KeyCredential(endpointKey))
                 .buildClient();
     }
 
     public ImageAnalysisResult analyze(String url, VisualFeatures feature) {
-        return this.client.analyzeFromUrl(
+        return this.imageAnalysisClient.analyzeFromUrl(
                 url,
                 Collections.singletonList(feature),
                 new ImageAnalysisOptions().setGenderNeutralCaption(true)
