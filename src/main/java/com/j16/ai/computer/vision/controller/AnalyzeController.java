@@ -1,16 +1,19 @@
 package com.j16.ai.computer.vision.controller;
 
+import com.azure.ai.textanalytics.models.DetectedLanguage;
 import com.azure.ai.vision.imageanalysis.models.CaptionResult;
 import com.azure.ai.vision.imageanalysis.models.DetectedTag;
 import com.azure.ai.vision.imageanalysis.models.DetectedTextLine;
 import com.azure.ai.vision.imageanalysis.models.ImageAnalysisResult;
 import com.j16.ai.computer.vision.dto.*;
 import com.j16.ai.computer.vision.service.AnalyzeService;
+import com.j16.ai.computer.vision.service.TextAnalyticsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.azure.ai.vision.imageanalysis.models.VisualFeatures.*;
 
@@ -19,10 +22,15 @@ import static com.azure.ai.vision.imageanalysis.models.VisualFeatures.*;
 public class AnalyzeController {
 
     private final AnalyzeService analyzeService;
+    private final TextAnalyticsService textAnalyticsService;
 
     @Autowired
-    public AnalyzeController(AnalyzeService analyzeService) {
+    public AnalyzeController(
+            AnalyzeService analyzeService,
+            TextAnalyticsService textAnalyticsService
+    ) {
         this.analyzeService = analyzeService;
+        this.textAnalyticsService = textAnalyticsService;
     }
 
     @GetMapping("/get/caption")
@@ -67,6 +75,31 @@ public class AnalyzeController {
                 .toList();
 
         return ResponseEntity.ok(new ReadTextResponse(lines));
+    }
+
+    @GetMapping("/get/read-detect-language")
+    public ResponseEntity<DetectLanguageResponse> getDetectTextFromImage(@RequestParam String url) {
+        ImageAnalysisResult result = analyzeService.analyze(url, READ);
+
+        if (result.getRead() == null || result.getRead().getBlocks().isEmpty()) {
+            throw new IllegalArgumentException("Could not extract text from image");
+        }
+
+        // Flatten all lines from all blocks
+        String document = result.getRead().getBlocks().stream()
+                .flatMap(block -> block.getLines().stream())
+                .map(DetectedTextLine::getText)
+                .collect(Collectors.joining(" "));
+
+        DetectedLanguage detectedLanguage = textAnalyticsService.getDetectedLanguage(document);
+
+        DetectLanguageResponse detectLanguageResponse = DetectLanguageResponse.builder()
+                .name(detectedLanguage.getName())
+                .iso6391Name(detectedLanguage.getIso6391Name())
+                .confidence(String.format("%.2f%%", detectedLanguage.getConfidenceScore() * 100))
+                .build();
+
+        return ResponseEntity.ok(detectLanguageResponse);
     }
 
 }

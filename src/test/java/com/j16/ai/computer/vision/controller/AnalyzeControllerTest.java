@@ -17,6 +17,7 @@ public class AnalyzeControllerTest {
 
     private final String ANALYZE_TEST_URL = "https://upload.wikimedia.org/wikipedia/commons/0/01/Bot-Test.jpg";
     private final String OCR_TEST_URL = "https://upload.wikimedia.org/wikipedia/commons/8/85/Logo-Test.png";
+    private final String LANG_URL = "https://upload.wikimedia.org/wikipedia/commons/e/e8/Everystar_logowiki.png?20170213061931";
 
     @Test
     void shouldGetCaption() throws Exception {
@@ -28,7 +29,8 @@ public class AnalyzeControllerTest {
     @Test
     void shouldNotGetCaption() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/vision/get/caption").param("url" + "1", ANALYZE_TEST_URL))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.status").value("400"));
     }
 
     @Test
@@ -42,7 +44,8 @@ public class AnalyzeControllerTest {
     @Test
     void shouldNotGetTags() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/vision/get/tags").param("url" + 1, ANALYZE_TEST_URL))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.status").value("400"));
     }
 
     @Test
@@ -55,6 +58,23 @@ public class AnalyzeControllerTest {
     @Test
     void shouldNotGetTextFromImage() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/vision/get/read").param("url" + 1, OCR_TEST_URL))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.status").value("400"));
     }
+
+    @Test
+    void shouldDetectLanguage() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/vision/get/read-detect-language").param("url", LANG_URL))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Japanese"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.iso6391Name").value("ja"));
+    }
+
+    @Test
+    void shouldNotDetectLanguage() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/vision/get/read-detect-language").param("url" + 1, LANG_URL))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.status").value("400"));
+    }
+
 }
