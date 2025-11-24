@@ -26,10 +26,23 @@ public class AnalyzeControllerTest {
     }
 
     @Test
+    void shouldNotGetCaption() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/vision/get/caption").param("url" + "1", ANALYZE_TEST_URL))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
     void shouldGetTags() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/vision/get/tags").param("url", ANALYZE_TEST_URL))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.tags").isNotEmpty());
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isArray());
+    }
+
+    @Test
+    void shouldNotGetTags() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/vision/get/tags").param("url" + 1, ANALYZE_TEST_URL))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     @Test
@@ -37,5 +50,11 @@ public class AnalyzeControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/vision/get/read").param("url", OCR_TEST_URL))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.lines").value("TEST LOGO"));
+    }
+
+    @Test
+    void shouldNotGetTextFromImage() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/vision/get/read").param("url" + 1, OCR_TEST_URL))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 }
