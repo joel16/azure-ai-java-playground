@@ -1,0 +1,31 @@
+name: Maven Build & Run Tests
+
+on:
+  push:
+  pull_request:
+  release:
+    types: [created]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v5
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Build and run tests with Maven
+        env:
+          TEXT_ANALYTICS_ENDPOINT_KEY: ${{ secrets.TEXT_ANALYTICS_ENDPOINT_KEY }}
+          TEXT_ANALYTICS_ENDPOINT_URI: ${{ secrets.TEXT_ANALYTICS_ENDPOINT_URI }}
+          VISION_ENDPOINT_KEY: ${{ secrets.VISION_ENDPOINT_KEY }}
+          VISION_ENDPOINT_URI: ${{ secrets.VISION_ENDPOINT_URI }}
+        run: mvn -B clean verify
