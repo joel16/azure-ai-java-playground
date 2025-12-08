@@ -1,9 +1,13 @@
 package com.j16.ai.computer.vision.controller;
 
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -75,6 +79,46 @@ public class AnalyzeControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/vision/get/read-detect-language").param("url" + 1, LANG_URL))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.status").value("400"));
+    }
+
+    @Test
+    @DisplayName("Should detect Miku in the uploaded image with high probability")
+    void shouldDetectMiku() throws Exception {
+        MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "images/miku.jpg",
+                MediaType.IMAGE_JPEG_VALUE,
+                getClass().getClassLoader().getResourceAsStream("images/miku.jpg")
+        );
+
+        mockMvc.perform(
+                    MockMvcRequestBuilders.multipart("/vision/custom/miku-or-mochi")
+                        .file(file)
+                )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.predictions").isArray())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.predictions[0].tagName").value("Miku"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.predictions[0].probability").value(Matchers.greaterThan(0.90)));
+    }
+
+    @Test
+    @DisplayName("Should detect Mochi in the uploaded image with high probability")
+    void shouldDetectMochi() throws Exception {
+        MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "images/mochi.jpg",
+                MediaType.IMAGE_JPEG_VALUE,
+                getClass().getClassLoader().getResourceAsStream("images/mochi.jpg")
+        );
+
+        mockMvc.perform(
+                    MockMvcRequestBuilders.multipart("/vision/custom/miku-or-mochi")
+                        .file(file)
+                )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.predictions").isArray())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.predictions[0].tagName").value("Mochi"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.predictions[0].probability").value(Matchers.greaterThan(0.90)));
     }
 
 }

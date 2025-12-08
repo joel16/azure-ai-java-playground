@@ -7,11 +7,14 @@ import com.azure.ai.vision.imageanalysis.models.DetectedTextLine;
 import com.azure.ai.vision.imageanalysis.models.ImageAnalysisResult;
 import com.j16.ai.computer.vision.dto.*;
 import com.j16.ai.computer.vision.service.AnalyzeService;
+import com.j16.ai.computer.vision.service.CustomVisionService;
 import com.j16.ai.computer.vision.service.TextAnalyticsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,14 +26,17 @@ public class AnalyzeController {
 
     private final AnalyzeService analyzeService;
     private final TextAnalyticsService textAnalyticsService;
+    private final CustomVisionService customVisionService;
 
     @Autowired
     public AnalyzeController(
             AnalyzeService analyzeService,
-            TextAnalyticsService textAnalyticsService
+            TextAnalyticsService textAnalyticsService,
+            CustomVisionService customVisionService
     ) {
         this.analyzeService = analyzeService;
         this.textAnalyticsService = textAnalyticsService;
+        this.customVisionService = customVisionService;
     }
 
     @GetMapping("/get/caption")
@@ -100,6 +106,11 @@ public class AnalyzeController {
                 .build();
 
         return ResponseEntity.ok(detectLanguageResponse);
+    }
+
+    @PostMapping("/custom/miku-or-mochi")
+    public ResponseEntity<CustomVisionResponse> getPSPModelFromImage(@RequestPart MultipartFile file) throws IOException {
+        return customVisionService.isMikuOrMochi(file);
     }
 
 }
