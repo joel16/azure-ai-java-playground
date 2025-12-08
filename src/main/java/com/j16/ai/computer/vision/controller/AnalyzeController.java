@@ -109,7 +109,7 @@ public class AnalyzeController {
     }
 
     @PostMapping("/custom/miku-or-mochi")
-    public ResponseEntity<CustomVisionResponse> getPSPModelFromImage(@RequestPart MultipartFile file) throws IOException {
+    public ResponseEntity<CustomVisionResponse> isMikuOrMochi(@RequestPart MultipartFile file) throws IOException {
         return customVisionService.isMikuOrMochi(file);
     }
 

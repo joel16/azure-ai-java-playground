@@ -24,6 +24,7 @@ public class AnalyzeControllerTest {
     private final String LANG_URL = "https://upload.wikimedia.org/wikipedia/commons/e/e8/Everystar_logowiki.png?20170213061931";
 
     @Test
+    @DisplayName("Should produce a caption from image")
     void shouldGetCaption() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/vision/get/caption").param("url", ANALYZE_TEST_URL))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -31,6 +32,7 @@ public class AnalyzeControllerTest {
     }
 
     @Test
+    @DisplayName("Should not produce a caption for image")
     void shouldNotGetCaption() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/vision/get/caption").param("url" + "1", ANALYZE_TEST_URL))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -38,6 +40,7 @@ public class AnalyzeControllerTest {
     }
 
     @Test
+    @DisplayName("Should get tags from an image")
     void shouldGetTags() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/vision/get/tags").param("url", ANALYZE_TEST_URL))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -46,6 +49,7 @@ public class AnalyzeControllerTest {
     }
 
     @Test
+    @DisplayName("Should not get tags from image")
     void shouldNotGetTags() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/vision/get/tags").param("url" + 1, ANALYZE_TEST_URL))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -53,6 +57,7 @@ public class AnalyzeControllerTest {
     }
 
     @Test
+    @DisplayName("Should extract and read text from an image")
     void shouldGetTextFromImage() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/vision/get/read").param("url", OCR_TEST_URL))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -60,6 +65,7 @@ public class AnalyzeControllerTest {
     }
 
     @Test
+    @DisplayName("Should not extract and read text from an image")
     void shouldNotGetTextFromImage() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/vision/get/read").param("url" + 1, OCR_TEST_URL))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -67,6 +73,7 @@ public class AnalyzeControllerTest {
     }
 
     @Test
+    @DisplayName("Should detect the language of extracted text from an image")
     void shouldDetectLanguage() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/vision/get/read-detect-language").param("url", LANG_URL))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -75,6 +82,7 @@ public class AnalyzeControllerTest {
     }
 
     @Test
+    @DisplayName("Should not detect the language of extracted text from an image")
     void shouldNotDetectLanguage() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/vision/get/read-detect-language").param("url" + 1, LANG_URL))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
