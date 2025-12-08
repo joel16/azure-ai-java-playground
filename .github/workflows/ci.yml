@@ -24,6 +24,8 @@ jobs:
 
       - name: Build and run tests with Maven
         env:
+          CUSTOM_VISION_ENDPOINT_KEY: ${{ secrets.CUSTOM_VISION_ENDPOINT_KEY }}
+          CUSTOM_VISION_ENDPOINT_URI: ${{ secrets.CUSTOM_VISION_ENDPOINT_URI }}
           TEXT_ANALYTICS_ENDPOINT_KEY: ${{ secrets.TEXT_ANALYTICS_ENDPOINT_KEY }}
           TEXT_ANALYTICS_ENDPOINT_URI: ${{ secrets.TEXT_ANALYTICS_ENDPOINT_URI }}
           VISION_ENDPOINT_KEY: ${{ secrets.VISION_ENDPOINT_KEY }}
