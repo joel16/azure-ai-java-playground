@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 import static com.azure.ai.vision.imageanalysis.models.VisualFeatures.*;
 
 @RestController
-@RequestMapping("/vision")
+@RequestMapping("/v1/vision")
 public class AnalyzeController {
 
     private final AnalyzeService analyzeService;
@@ -39,7 +39,7 @@ public class AnalyzeController {
         this.customVisionService = customVisionService;
     }
 
-    @GetMapping("/get/caption")
+    @GetMapping("/caption")
     public ResponseEntity<CaptionResponse> getCaption(@RequestParam String url) {
         CaptionResult caption = analyzeService.analyze(url, CAPTION).getCaption();
 
@@ -51,7 +51,7 @@ public class AnalyzeController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/get/tags")
+    @GetMapping("/tags")
     public ResponseEntity<List<TagResponse>> getTags(@RequestParam String url) {
         ImageAnalysisResult result = analyzeService.analyze(url, TAGS);
         List<DetectedTag> detectedTags = result.getTags().getValues();
@@ -66,7 +66,7 @@ public class AnalyzeController {
         return ResponseEntity.ok(tagResponses);
     }
 
-    @GetMapping("/get/read")
+    @GetMapping("/read")
     public ResponseEntity<ReadTextResponse> getTextFromImage(@RequestParam String url) {
         ImageAnalysisResult result = analyzeService.analyze(url, READ);
 
@@ -83,7 +83,7 @@ public class AnalyzeController {
         return ResponseEntity.ok(new ReadTextResponse(lines));
     }
 
-    @GetMapping("/get/read-detect-language")
+    @GetMapping("/read-detect-language")
     public ResponseEntity<DetectLanguageResponse> getDetectTextFromImage(@RequestParam String url) {
         ImageAnalysisResult result = analyzeService.analyze(url, READ);
 
